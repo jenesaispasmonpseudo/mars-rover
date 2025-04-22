@@ -28,7 +28,6 @@ jobs:
 
       - name: Check for 👽🚀🌍 in commit messages
         run: |
-          echo "🔍 Vérification des messages de commit..."
           messages=$(git log --format=%s ${{ github.event.before }}..${{ github.sha }})
           echo "$messages"
 
