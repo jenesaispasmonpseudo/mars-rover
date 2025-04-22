@@ -24,6 +24,26 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
- 
+            
+      - name: Check for 🔒 in commit messages
+        run: |
+          echo "🔍 Vérification des messages de commit..."
+          messages=$(git log --format=%s ${{ github.event.before }}..${{ github.sha }})
+          echo "$messages"
+          
+          failed=0
+          while read -r msg; do
+            if [[ "$msg" != *"👽"* && "$msg" != *"🚀"* && "$msg" != *"🌍"* ]]; then
+              echo "❌ Commit invalide : '$msg' ne contient aucun des emojis requis (👽, 🚀, 🌍)"
+              failed=1
+            fi
+          done <<< "$messages"
+          
+          if [[ $failed -eq 1 ]]; then
+            echo "🔒 Tous les commits doivent contenir l'emoji 🔒 dans le message."
+            exit 1
+          fi
+        shell: bash
+      
       - name: Execute unit tests
         run: dotnet test
