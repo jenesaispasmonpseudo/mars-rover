@@ -40,7 +40,7 @@ jobs:
           done <<< "$messages"
 
           if [[ $failed -eq 1 ]]; then
-            echo "🛑 Tous les commits doivent contenir au moins un des emojis suivants : 👽, 🚀, 🌍"
+            echo "🛑 Tous les commits doivent contenir au moins un des emojis : 👽, 🚀, 🌍"
             exit 1
           fi
         shell: bash
