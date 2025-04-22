@@ -1,22 +1,23 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+
 on: [push]
- 
+
 jobs:
   Explore-GitHub-Actions:
     runs-on: windows-latest
- 
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
- 
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 7.0.x
- 
+
       - name: Cache NuGet packages
         uses: actions/cache@v3
         with:
@@ -24,13 +25,13 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
-            
-      - name: Check for 🔒 in commit messages
+
+      - name: Check for 👽🚀🌍 in commit messages
         run: |
           echo "🔍 Vérification des messages de commit..."
           messages=$(git log --format=%s ${{ github.event.before }}..${{ github.sha }})
           echo "$messages"
-          
+
           failed=0
           while read -r msg; do
             if [[ "$msg" != *"👽"* && "$msg" != *"🚀"* && "$msg" != *"🌍"* ]]; then
@@ -38,12 +39,38 @@ jobs:
               failed=1
             fi
           done <<< "$messages"
-          
+
           if [[ $failed -eq 1 ]]; then
-            echo "🔒 Tous les commits doivent contenir l'emoji 🔒 dans le message."
+            echo "🛑 Tous les commits doivent contenir au moins un des emojis suivants : 👽, 🚀, 🌍"
             exit 1
           fi
         shell: bash
-      
+
       - name: Execute unit tests
         run: dotnet test
+
+      - name: Slack notification on success ☀️
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "✅ Les tests ont réussi ! Voici un peu de soleil ☀️",
+            "attachments": [
+              {
+                "image_url": "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
+                "alt_text": "Soleil"
+              }
+            ]
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Slack notification on failure 🌩️
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "❌ Les tests ont échoué... L'orage gronde 🌩️",
+            "attachments": [
+              {
+                "image_url": "https://media.giphy.com/media/3og0IPxMM0erATueVW/giphy.gif",
+                "alt_text": "Orage"
+              }
+            ]
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
