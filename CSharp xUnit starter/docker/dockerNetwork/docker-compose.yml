@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./web
+    container_name: web
+    networks:
+      - customnet
+
+  client:
+    build: ./client
+    container_name: client
+    networks:
+      - customnet
+    depends_on:
+      - web
+
+networks:
+  customnet:
+    driver: bridge

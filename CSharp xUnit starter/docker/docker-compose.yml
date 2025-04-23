@@ -1,0 +1,6 @@
+version: '3.8'
+
+services:
+  curl_google:
+    build: .
+    container_name: curl_google_container
